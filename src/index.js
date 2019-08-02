@@ -8,23 +8,26 @@ function useFetch(url) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(null);
 
-  setLoading(true);
-
-  useEffect(url => {
+  useEffect(() => {
+    setLoading(true);
     fetch(url)
       .then(res => res.json())
-      // .then(res => console.log(res))
-      .then(data => setData(data))
-      .catch(e => setError(e));
-  }),
-    [];
-
-  setLoading(false);
+      .then(data => {
+        setData(data);
+        setError(null);
+        setLoading(false);
+      })
+      .catch(e => {
+        console.warn(e.message);
+        setError('Problem fetching data');
+        setLoading(false);
+      });
+  }, [url]);
 
   return {
-    loading: false,
-    data: data,
-    error: error
+    loading,
+    data,
+    error
   };
 }
 
