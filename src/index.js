@@ -1,44 +1,48 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
 import './styles.css';
 
-function useWait(delay = 0) {
-  const [show, setShow] = React.useState(false);
+function useWindowDimensions() {
+  const [width, setWidth] = React.useState(window.innerWidth);
+  const [height, setHeight] = React.useState(window.innerHeight);
+
   useEffect(() => {
-    let timer = setTimeout(() => {
-      setShow(true);
-    }, delay);
-    return () => {
-      clearTimeout(timer);
+    const listener = () => {
+      setWidth(window.innerWidth);
+      setHeight(window.innerHeight);
     };
-  }, [delay]);
-  return show;
-}
+    window.addEventListener('resize', listener);
 
-function Wait({ delay = 1000, placeholder, ui }) {
-  const show = useWait(delay);
+    return;
+  }, []);
 
-  return show === true ? ui : placeholder;
+  return { width, height };
 }
 
 function App() {
+  const { width, height } = useWindowDimensions();
+
   return (
     <div className="App">
-      <Wait
-        delay={3000}
-        placeholder={<p>Waiting...</p>}
-        ui={<p>This text should appear after 3 seconds.</p>}
-      />
+      <h2>width: {width}</h2>
+      <h2>height: {height}</h2>
+      <p>Resize the window.</p>
     </div>
   );
 }
 
 const rootElement = document.getElementById('root');
 ReactDOM.render(<App />, rootElement);
+
 /*
   Instructions:
-    Finish implementing the `useWait` custom Hook.
-    `useWait` should return a boolean that changes from
-    `false` to `true` after `delay` seconds. 
+    You're given a `useWindowDimensions` custom Hook. Your
+    job is to finish implementing it. It should return
+    an object with a `width` property that represents the current
+    width of the window and a `height` property which represents
+    the current height. 
+
+    To get those values, you can use teh `window.addEventListener`
+    API.https://developer.mozilla.org/en-US/docs/Web/API/Window/resize_event
 */
