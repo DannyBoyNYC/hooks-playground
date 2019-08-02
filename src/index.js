@@ -1,31 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
-import './index.css';
-/*
-    1. The user can add new todo items
-    2. The user can remove todo items
-*/
-function Todo() {
-  const [todo, updateTodo] = useState('');
-  const [todos, updateTodos] = useState([]);
+import './styles.css';
 
+function Wait({ delay = 1000, placeholder, ui }) {
+  const { show, setShow } = useState(false);
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      setShow(true);
+    }, delay);
+
+    return () => window.clearTimeout(id);
+  }, [delay]);
+
+  return show === true ? ui : placeholder;
+}
+
+function App() {
   return (
-    <div>
-      <label htmlFor="todo">
-        Todo
-        <input
-          type="text"
-          value={todo}
-          onChange={e => updateTodo(e.target.value)}
-        />
-      </label>
-      <button onClick={() => updateTodos(todo)}>Add Todo</button>
-      {todo}
-      {console.log(todos)}
-      {/* {todos != [] ? todos.map(todo => `<p>{todo}</p>`) : ''} */}
+    <div className="App">
+      <Wait
+        delay={3000}
+        placeholder={<p>Waiting...</p>}
+        ui={<p>This text should appear after 3 seconds.</p>}
+      />
     </div>
   );
 }
 
-ReactDOM.render(<Todo />, document.getElementById('root'));
+const rootElement = document.getElementById('root');
+ReactDOM.render(<App />, rootElement);
+/*
+  Instructions:
+    You'll notice below that we have a Wait component.
+    The purpose of Wait is to render the `ui` prop after
+    `delay` seconds. Before `delay` seconds, it should
+    render `placeholder`.
+*/
