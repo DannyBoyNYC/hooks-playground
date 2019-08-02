@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+
 import logo from './logo.svg';
 import './App.css';
 
@@ -19,8 +20,13 @@ function App() {
           Learn React
         </a>
       </header>
+      <Content logo={logo} />
     </div>
   );
 }
+
+const Content = () => {
+  return <img src={logo} />;
+};
 
 export default App;

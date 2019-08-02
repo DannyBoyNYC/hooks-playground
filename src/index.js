@@ -1,12 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
+
 import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+/*
+    1. The user can add new todo items
+    2. The user can remove todo items
+*/
+function Todo() {
+  const [todo, updateTodo] = useState('');
+  const [todos, updateTodos] = useState([]);
 
-ReactDOM.render(<App />, document.getElementById('root'));
+  return (
+    <div>
+      <label htmlFor="todo">
+        Todo
+        <input
+          type="text"
+          value={todo}
+          onChange={e => updateTodo(e.target.value)}
+        />
+      </label>
+      <button onClick={() => updateTodos(todo)}>Add Todo</button>
+      {todo}
+      {console.log(todos)}
+      {/* {todos != [] ? todos.map(todo => `<p>{todo}</p>`) : ''} */}
+    </div>
+  );
+}
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+ReactDOM.render(<Todo />, document.getElementById('root'));
