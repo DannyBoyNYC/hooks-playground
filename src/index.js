@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import './styles.css';
 
 function Wait({ delay = 1000, placeholder, ui }) {
-  const { show, setShow } = useState(false);
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     const id = window.setTimeout(() => {
