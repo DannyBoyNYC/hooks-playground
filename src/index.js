@@ -1,13 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
 import './styles.css';
 
 function useFetch(url) {
+  const [error, setError] = useState(true);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(null);
+
+  setLoading(true);
+
+  useEffect(url => {
+    fetch(url)
+      .then(res => res.json())
+      // .then(res => console.log(res))
+      .then(data => setData(data))
+      .catch(e => setError(e));
+  }),
+    [];
+
+  setLoading(false);
+
   return {
-    loading: true,
-    data: null,
-    error: null
+    loading: false,
+    data: data,
+    error: error
   };
 }
 
