@@ -1,86 +1,100 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import Slider from './Slider';
-
 import './styles.css';
 
-function reducer(state, action) {
-  if (action.type === 'increment') {
+function fetchReducer(state, action) {
+  if (action.type === 'fetch') {
     return {
-      count: state.count + state.step,
-      step: state.step
+      ...state,
+      loading: true
     };
-  } else if (action.type === 'decrement') {
+  } else if (action.type === 'success') {
     return {
-      count: state.count - state.step,
-      step: state.step
+      data: action.data,
+      error: null,
+      loading: false
     };
-  } else if (action.type === 'reset') {
+  } else if (action.type === 'error') {
     return {
-      count: 0,
-      step: state.step
-    };
-  } else if (action.type === 'updateStep') {
-    return {
-      count: state.count,
-      step: action.step
+      ...state,
+      error: 'Error fetching data. Try again.',
+      loading: false
     };
   } else {
-    throw new Error();
+    throw new Error(`That action type isn't supported`);
   }
 }
 
-function Counter() {
-  const [state, dispatch] = React.useReducer(reducer, { count: 0, step: 1 });
+function useFetch(url) {
+  const [state, dispatch] = React.useReducer(fetchReducer, {
+    data: null,
+    error: null,
+    loading: true
+  });
+
+  React.useEffect(() => {
+    dispatch({ type: 'fetch' });
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        dispatch({ type: 'success', data });
+      })
+      .catch(e => {
+        console.warn(e.message);
+        dispatch({ type: 'error' });
+      });
+  }, [url]);
+
+  return { loading: state.loading, data: state.data, error: state.error };
+}
+
+const postIds = [1, 2, 3, 4, 5, 6, 7, 8];
+
+function App() {
+  const [index, setIndex] = React.useState(0);
+
+  const { loading, data: post, error } = useFetch(
+    `https://jsonplaceholder.typicode.com/posts/${postIds[index]}`
+  );
+
+  const incrementIndex = () => {
+    setIndex(i => (i === postIds.length - 1 ? i : i + 1));
+  };
+
+  if (loading === true) {
+    return <p>Loading</p>;
+  }
+
+  if (error) {
+    return (
+      <React.Fragment>
+        <p>{error}</p>
+        <button onClick={incrementIndex}>Next Post</button>
+      </React.Fragment>
+    );
+  }
 
   return (
-    <React.Fragment>
-      <Slider
-        onChange={value =>
-          dispatch({
-            type: 'updateStep',
-            step: value
-          })
-        }
-      />
-      <hr />
-      <h1>{state.count}</h1>
-      <button
-        onClick={() =>
-          dispatch({
-            type: 'increment'
-          })
-        }
-      >
-        +
-      </button>
-      <button
-        onClick={() =>
-          dispatch({
-            type: 'decrement'
-          })
-        }
-      >
-        -
-      </button>
-      <button
-        onClick={() =>
-          dispatch({
-            type: 'reset'
-          })
-        }
-      >
-        Reset
-      </button>
-    </React.Fragment>
+    <div className='App'>
+      <h1>{post.title}</h1>
+      <p>{post.body}</p>
+      {error && <p>{error}</p>}
+      {index === postIds.length - 1 ? (
+        <p>No more posts</p>
+      ) : (
+        <button onClick={incrementIndex}>Next Post</button>
+      )}
+    </div>
   );
 }
 
 const rootElement = document.getElementById('root');
-ReactDOM.render(<Counter />, rootElement);
+ReactDOM.render(<App />, rootElement);
 
 /*
-
-
+  Instructions:
+    Refactor `useFetch` to use `useReducer` instead of
+    `useState`.
 */
